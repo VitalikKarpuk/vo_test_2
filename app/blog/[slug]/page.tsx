@@ -101,20 +101,14 @@ export default async function BlogPostPage({ params }: PageProps) {
 
           {/* Author & Date */}
           <div
-            className="flex items-center gap-6 pb-8 mb-8 animate-fade-up"
+            className="flex items-center gap-6 mb-8 animate-fade-up"
             style={{ animationDelay: '0.1s' }}
           >
-            {post.author && (
+            {post.date && (
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                  <span className="text-sm font-medium">{post.author[0]}</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">{post.author}</p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="w-3 h-3" />
-                    <time dateTime={post.date}>{formatDate(post.date)}</time>
-                  </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Calendar className="w-3 h-3" />
+                  <time dateTime={post.date}>{formatDate(post.date)}</time>
                 </div>
               </div>
             )}
