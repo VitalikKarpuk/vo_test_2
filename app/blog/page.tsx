@@ -55,7 +55,27 @@ export default async function BlogPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="px-6 pt-8 pb-12 md:pt-12 md:pb-16">
+      <section className="relative px-6 pt-8 pb-12 md:pt-12 md:pb-16 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 -z-10">
+          {/* Gradient base */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-link/5" />
+          
+          {/* Subtle grid pattern */}
+          <div 
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px),
+                               linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
+              backgroundSize: '60px 60px'
+            }}
+          />
+          
+          {/* Decorative blur circles */}
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-link/10 rounded-full blur-3xl" />
+        </div>
+
         <div className="mx-auto max-w-6xl">
           {/* Featured Article */}
           {featuredPost && (
