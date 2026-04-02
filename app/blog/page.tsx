@@ -112,13 +112,13 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
   const secondaryPosts = followingPosts.slice(0, 3)
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-      {/* Main Featured - spans 2 columns on lg */}
+    <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
+      {/* Main Featured - left side */}
       <article 
-        className="group relative md:col-span-2 lg:col-span-2 lg:row-span-2 animate-fade-up"
+        className="group relative animate-fade-up"
         style={{ animationDelay: '0.1s' }}
       >
-        <Link href={`/blog/${post.slug}`} className="block relative aspect-video lg:aspect-auto lg:h-full overflow-hidden rounded-xl bg-muted">
+        <Link href={`/blog/${post.slug}`} className="block relative aspect-video overflow-hidden rounded-xl bg-muted">
           {post.coverSrc ? (
             <Image
               src={post.coverSrc}
@@ -126,74 +126,74 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
               fill
               priority
               className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 66vw"
+              sizes="(max-width: 1024px) 100vw, 66vw"
             />
           ) : (
             <div className="absolute inset-0 bg-secondary" />
           )}
           
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-          
-          {/* Content overlay */}
-          <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6 lg:p-8">
-            {category && (
-              <span className="inline-block self-start px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-white/90 bg-primary/90 rounded-md mb-3">
-                {category}
-              </span>
-            )}
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-white leading-tight mb-2 line-clamp-3 group-hover:text-white/90 transition-colors">
-              {post.title}
-            </h2>
-            <div className="flex items-center gap-3 text-xs text-white/70">
-              {post.author && <span>{post.author}</span>}
-              {post.author && <span className="w-1 h-1 rounded-full bg-white/50" />}
-              <time>{formatDate(post.date)}</time>
+          {/* Content block with local background - bottom only */}
+          <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
+            <div className="bg-black/70 backdrop-blur-sm rounded-lg p-4 md:p-5">
+              {category && (
+                <span className="inline-block px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-white bg-primary rounded-md mb-3">
+                  {category}
+                </span>
+              )}
+              <h2 className="text-xl sm:text-2xl font-semibold text-white leading-tight mb-2 line-clamp-2 group-hover:text-white/90 transition-colors">
+                {post.title}
+              </h2>
+              <div className="flex items-center gap-3 text-xs text-white/70">
+                {post.author && <span>{post.author}</span>}
+                {post.author && <span className="w-1 h-1 rounded-full bg-white/50" />}
+                <time>{formatDate(post.date)}</time>
+              </div>
             </div>
           </div>
         </Link>
       </article>
 
-      {/* Secondary posts - stacked on the right */}
-      {secondaryPosts.map((p, i) => {
-        const cat = p.categories?.split(',')[0]?.trim()
-        return (
-          <article
-            key={p.id}
-            className="group relative animate-fade-up opacity-0"
-            style={{ animationDelay: `${0.15 + i * 0.08}s` }}
-          >
-            <Link href={`/blog/${p.slug}`} className="block relative aspect-video overflow-hidden rounded-xl bg-muted">
-              {p.coverSrc ? (
-                <Image
-                  src={p.coverSrc}
-                  alt={p.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-secondary" />
-              )}
-              
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-              
-              {/* Content overlay */}
-              <div className="absolute inset-0 flex flex-col justify-end p-4">
-                {cat && (
-                  <span className="inline-block self-start px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white/90 bg-primary/90 rounded mb-2">
-                    {cat}
-                  </span>
+      {/* Secondary posts - right column stacked */}
+      <div className="flex flex-col gap-4">
+        {secondaryPosts.map((p, i) => {
+          const cat = p.categories?.split(',')[0]?.trim()
+          return (
+            <article
+              key={p.id}
+              className="group relative flex-1 animate-fade-up opacity-0"
+              style={{ animationDelay: `${0.15 + i * 0.08}s` }}
+            >
+              <Link href={`/blog/${p.slug}`} className="block relative aspect-video h-full overflow-hidden rounded-xl bg-muted">
+                {p.coverSrc ? (
+                  <Image
+                    src={p.coverSrc}
+                    alt={p.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 1024px) 100vw, 33vw"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-secondary" />
                 )}
-                <h3 className="text-sm font-medium text-white leading-snug line-clamp-2 group-hover:text-white/90 transition-colors">
-                  {p.title}
-                </h3>
-              </div>
-            </Link>
-          </article>
-        )
-      })}
+                
+                {/* Content block with local background - bottom only */}
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <div className="bg-black/70 backdrop-blur-sm rounded-lg p-3">
+                    {cat && (
+                      <span className="inline-block px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white bg-primary rounded mb-1.5">
+                        {cat}
+                      </span>
+                    )}
+                    <h3 className="text-sm font-medium text-white leading-snug line-clamp-2 group-hover:text-white/90 transition-colors">
+                      {p.title}
+                    </h3>
+                  </div>
+                </div>
+              </Link>
+            </article>
+          )
+        })}
+      </div>
     </div>
   )
 }
