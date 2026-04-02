@@ -55,14 +55,6 @@ export default async function BlogPage() {
       {/* Hero Section */}
       <section className="px-6 pt-16 pb-20 md:pt-24 md:pb-28">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-16 md:mb-20 text-center animate-fade-up">
-            <h1 className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground mb-6">
-              Stories & Insights
-            </h1>
-            <p className="text-body text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-              Exploring ideas at the intersection of technology, design, and human experience.
-            </p>
-          </div>
 
           {/* Featured Article */}
           {featuredPost && (
@@ -117,99 +109,91 @@ function SectionHeader({ title }: { title: string }) {
 
 function FeaturedArticle({ post, followingPosts }: { post: MappedPost; followingPosts: MappedPost[] }) {
   const category = post.categories?.split(',')[0]?.trim()
-  const excerpt = stripExcerpt(post.excerpt || '')
+  const secondaryPosts = followingPosts.slice(0, 3)
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 lg:gap-8 items-stretch">
-      {/* Left — Main Featured Post */}
-      <article className="group animate-fade-up" style={{ animationDelay: '0.1s' }}>
-        <Link href={`/blog/${post.slug}`} className="flex flex-col h-full">
-          {/* Image 16:9 */}
-          <div className="relative w-full aspect-video overflow-hidden rounded-lg bg-muted image-zoom mb-5">
-            {post.coverSrc ? (
-              <Image
-                src={post.coverSrc}
-                alt={post.title}
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 60vw"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-secondary" />
-            )}
-          </div>
-
-          {/* Content */}
-          <div className="flex flex-col flex-1">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      {/* Main Featured - spans 2 columns on lg */}
+      <article 
+        className="group relative md:col-span-2 lg:col-span-2 lg:row-span-2 animate-fade-up"
+        style={{ animationDelay: '0.1s' }}
+      >
+        <Link href={`/blog/${post.slug}`} className="block relative aspect-video lg:aspect-auto lg:h-full overflow-hidden rounded-xl bg-muted">
+          {post.coverSrc ? (
+            <Image
+              src={post.coverSrc}
+              alt={post.title}
+              fill
+              priority
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 66vw"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-secondary" />
+          )}
+          
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          
+          {/* Content overlay */}
+          <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6 lg:p-8">
             {category && (
-              <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-accent mb-3">
+              <span className="inline-block self-start px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-white/90 bg-primary/90 rounded-md mb-3">
                 {category}
               </span>
             )}
-            <h2 className="text-headline text-2xl sm:text-3xl text-foreground mb-3 group-hover:text-accent transition-colors duration-300">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-white leading-tight mb-2 line-clamp-3 group-hover:text-white/90 transition-colors">
               {post.title}
             </h2>
-            {excerpt && (
-              <p className="text-body text-muted-foreground text-sm sm:text-base mb-4 line-clamp-3 flex-1">
-                {excerpt}
-              </p>
-            )}
-            <div className="flex items-center gap-5 text-xs text-muted-foreground mt-auto">
+            <div className="flex items-center gap-3 text-xs text-white/70">
               {post.author && <span>{post.author}</span>}
-              {post.author && <span className="w-1 h-1 rounded-full bg-border" />}
+              {post.author && <span className="w-1 h-1 rounded-full bg-white/50" />}
               <time>{formatDate(post.date)}</time>
-              <span className="ml-auto inline-flex items-center gap-1.5 text-xs font-medium text-foreground group-hover:text-accent transition-colors">
-                Read
-                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
-              </span>
             </div>
           </div>
         </Link>
       </article>
 
-      {/* Right — Following 3 Posts stacked */}
-      {followingPosts.length > 0 && (
-        <div className="flex flex-col gap-5 divide-y divide-border">
-          {followingPosts.map((p, i) => (
-            <article
-              key={p.id}
-              className="group animate-fade-up opacity-0 pt-5 first:pt-0"
-              style={{ animationDelay: `${0.15 + i * 0.08}s` }}
-            >
-              <Link href={`/blog/${p.slug}`} className="flex gap-4 items-start">
-                {/* Thumbnail 16:9 */}
-                <div className="relative w-28 shrink-0 aspect-video overflow-hidden rounded-md bg-muted image-zoom">
-                  {p.coverSrc ? (
-                    <Image
-                      src={p.coverSrc}
-                      alt={p.title}
-                      fill
-                      className="object-cover"
-                      sizes="112px"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-secondary" />
-                  )}
-                </div>
-
-                {/* Text */}
-                <div className="flex flex-col flex-1 min-w-0">
-                  {p.categories && (
-                    <span className="text-xs font-medium uppercase tracking-[0.12em] text-accent mb-1">
-                      {p.categories.split(',')[0]?.trim()}
-                    </span>
-                  )}
-                  <h3 className="text-headline text-sm text-foreground line-clamp-2 group-hover:text-accent transition-colors duration-300 mb-2">
-                    {p.title}
-                  </h3>
-                  <time className="text-xs text-muted-foreground mt-auto">{formatDate(p.date)}</time>
-                </div>
-              </Link>
-            </article>
-          ))}
-        </div>
-      )}
+      {/* Secondary posts - stacked on the right */}
+      {secondaryPosts.map((p, i) => {
+        const cat = p.categories?.split(',')[0]?.trim()
+        return (
+          <article
+            key={p.id}
+            className="group relative animate-fade-up opacity-0"
+            style={{ animationDelay: `${0.15 + i * 0.08}s` }}
+          >
+            <Link href={`/blog/${p.slug}`} className="block relative aspect-video overflow-hidden rounded-xl bg-muted">
+              {p.coverSrc ? (
+                <Image
+                  src={p.coverSrc}
+                  alt={p.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-secondary" />
+              )}
+              
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+              
+              {/* Content overlay */}
+              <div className="absolute inset-0 flex flex-col justify-end p-4">
+                {cat && (
+                  <span className="inline-block self-start px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white/90 bg-primary/90 rounded mb-2">
+                    {cat}
+                  </span>
+                )}
+                <h3 className="text-sm font-medium text-white leading-snug line-clamp-2 group-hover:text-white/90 transition-colors">
+                  {p.title}
+                </h3>
+              </div>
+            </Link>
+          </article>
+        )
+      })}
     </div>
   )
 }
@@ -219,7 +203,7 @@ function ArticleCard({ post, index }: { post: MappedPost; index: number }) {
   const excerpt = stripExcerpt(post.excerpt || '')
 
   return (
-    <article 
+    <article
       className="group animate-fade-up opacity-0"
       style={{ animationDelay: `${0.1 + index * 0.05}s` }}
     >
@@ -267,7 +251,7 @@ function ArticleListItem({ post, index }: { post: MappedPost; index: number }) {
   const category = post.categories?.split(',')[0]?.trim()
 
   return (
-    <article 
+    <article
       className="group py-6 first:pt-0 last:pb-0 animate-slide-up opacity-0"
       style={{ animationDelay: `${index * 0.03}s` }}
     >
