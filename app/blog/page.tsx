@@ -2,144 +2,23 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { getAllArticles, type MappedPost } from '@/lib/graphql/articles'
-import FeaturedEditorial from '@/components/featured-editorial'
-import CategoryBadge from '@/components/category-badge'
-import CategoryFilter from '@/components/category-filter'
+import { ArrowRight, Calendar, User } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'AI Blog | Latest Articles on Artificial Intelligence',
-  description: 'Discover the latest insights, tutorials, and news about AI, machine learning, and technology.',
+  title: 'Blog | Insights & Stories',
+  description: 'Discover the latest insights, tutorials, and stories about technology and innovation.',
 }
 
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric',
   })
 }
 
-export default async function BlogPage() {
-  const posts = await getAllArticles()
-
-  // Extract unique categories from all posts (sorted alphabetically)
-  const allCategories = Array.from(
-    new Set(
-      posts
-        .flatMap((p) => (p.categories ? p.categories.split(',').map((c) => c.trim()) : []))
-        .filter(Boolean)
-    )
-  ).sort()
-
-  // Split posts: first 4 — hero + 3 «Also featured»; rest — grids
-  const featuredPosts = posts.slice(0, 4)
-  const latestPosts = posts.slice(4, 10)
-  const remainingPosts = posts.slice(10)
-
-  if (posts.length === 0) {
-    return (
-      <main className="min-h-screen bg-background">
-        <Header />
-        <section className="mx-auto max-w-7xl px-4 py-20">
-          <EmptyState />
-        </section>
-        <Footer />
-      </main>
-    )
-  }
-
-  return (
-    <main className="min-h-screen bg-background">
-      <Header />
-
-      {/* Featured — editorial hero + rail (16:9 imagery) */}
-      {featuredPosts.length > 0 && (
-        <section className="px-4 pt-8 pb-10 animate-fade-up">
-          <div className="mx-auto max-w-7xl">
-            <SectionHeading color="primary" label="Featured" />
-            <FeaturedEditorial posts={featuredPosts} />
-          </div>
-        </section>
-      )}
-
-      {/* Latest Articles — 3-column grid */}
-      {latestPosts.length > 0 && (
-        <section className="px-4 py-10 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-          <div className="mx-auto max-w-7xl">
-            <SectionHeading color="primary" label="Latest Articles" />
-
-            {/* Category filter row */}
-            <div className="mb-7">
-              <CategoryFilter categories={allCategories} />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {latestPosts.map((post, index) => (
-                <PostCard key={post.id} post={post} index={index} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* More to Explore — 4-column grid */}
-      {remainingPosts.length > 0 && (
-        <section className="px-4 py-10 bg-muted/30 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-          <div className="mx-auto max-w-7xl">
-            <SectionHeading color="link" label="More to Explore" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {remainingPosts.map((post, index) => (
-                <PostCard key={post.id} post={post} index={index} compact />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-
-      <Footer />
-    </main>
-  )
-}
-
-// ─── Sub-components ────────────────────────────────────────────────────────────
-
-function SectionHeading({ label, color }: { label: string; color: 'primary' | 'link' }) {
-  const colorClass =
-    color === 'primary'
-      ? 'bg-primary text-primary'
-      : 'bg-[hsl(var(--link))] text-[hsl(var(--link))]'
-  const gradientClass =
-    color === 'primary'
-      ? 'from-primary/30'
-      : 'from-[hsl(var(--link))]/30'
-
-  return (
-    <div className="flex items-center gap-4 mb-6">
-      <div className="flex items-center gap-2">
-        <span className={`w-2 h-2 rounded-full ${colorClass.split(' ')[0]} animate-pulse-glow`} />
-        <h2 className={`text-sm font-semibold uppercase tracking-widest ${colorClass.split(' ')[1]}`}>
-          {label}
-        </h2>
-      </div>
-      <div className={`flex-1 h-px bg-gradient-to-r ${gradientClass} to-transparent`} />
-    </div>
-  )
-}
-
-function PostCard({
-  post,
-  index,
-  compact = false,
-}: {
-  post: MappedPost
-  index: number
-  compact?: boolean
-}) {
-  const category = post.categories?.split(',')[0]?.trim() || null
-
-  // Strip MDX/markdown syntax for plain text excerpt
-  const plainExcerpt = (post.excerpt || '')
+function stripExcerpt(raw: string): string {
+  return raw
     .replace(/```[\s\S]*?```/g, '')
     .replace(/`[^`]+`/g, '')
     .replace(/\*\*([^*]+)\*\*/g, '$1')
@@ -149,57 +28,266 @@ function PostCard({
     .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
     .replace(/\n+/g, ' ')
     .trim()
+}
+
+export default async function BlogPage() {
+  const posts = await getAllArticles()
+
+  const featuredPost = posts[0]
+  const featuredFollowing = posts.slice(1, 4)
+  const recentPosts = posts.slice(4, 7)
+  const allPosts = posts.slice(7)
+
+  if (posts.length === 0) {
+    return (
+      <main className="min-h-screen bg-background">
+        <Header />
+        <EmptyState />
+        <Footer />
+      </main>
+    )
+  }
 
   return (
-    <article
-      className="group ai-card rounded-2xl overflow-hidden bg-card border border-border/50 animate-fade-up flex flex-col"
-      style={{ animationDelay: `${0.05 + index * 0.04}s` }}
+    <main className="min-h-screen bg-background">
+      <Header />
+
+      {/* Hero Section */}
+      <section className="px-6 pt-16 pb-20 md:pt-24 md:pb-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-16 md:mb-20 text-center animate-fade-up">
+            <h1 className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground mb-6">
+              Stories & Insights
+            </h1>
+            <p className="text-body text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
+              Exploring ideas at the intersection of technology, design, and human experience.
+            </p>
+          </div>
+
+          {/* Featured Article */}
+          {featuredPost && (
+            <FeaturedArticle post={featuredPost} followingPosts={featuredFollowing} />
+          )}
+        </div>
+      </section>
+
+      {/* Recent Articles */}
+      {recentPosts.length > 0 && (
+        <section className="px-6 py-16 md:py-20 border-t border-border">
+          <div className="mx-auto max-w-6xl">
+            <SectionHeader title="Recent" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 stagger">
+              {recentPosts.map((post, i) => (
+                <ArticleCard key={post.id} post={post} index={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* All Articles */}
+      {allPosts.length > 0 && (
+        <section className="px-6 py-16 md:py-20 border-t border-border bg-muted/30">
+          <div className="mx-auto max-w-6xl">
+            <SectionHeader title="Archive" />
+            <div className="space-y-0 divide-y divide-border">
+              {allPosts.map((post, i) => (
+                <ArticleListItem key={post.id} post={post} index={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <Footer />
+    </main>
+  )
+}
+
+function SectionHeader({ title }: { title: string }) {
+  return (
+    <div className="flex items-center gap-4 mb-10 md:mb-12">
+      <h2 className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        {title}
+      </h2>
+      <div className="flex-1 h-px bg-border" />
+    </div>
+  )
+}
+
+function FeaturedArticle({ post, followingPosts }: { post: MappedPost; followingPosts: MappedPost[] }) {
+  const category = post.categories?.split(',')[0]?.trim()
+  const excerpt = stripExcerpt(post.excerpt || '')
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 lg:gap-8 items-stretch">
+      {/* Left — Main Featured Post */}
+      <article className="group animate-fade-up" style={{ animationDelay: '0.1s' }}>
+        <Link href={`/blog/${post.slug}`} className="flex flex-col h-full">
+          {/* Image 16:9 */}
+          <div className="relative w-full aspect-video overflow-hidden rounded-lg bg-muted image-zoom mb-5">
+            {post.coverSrc ? (
+              <Image
+                src={post.coverSrc}
+                alt={post.title}
+                fill
+                priority
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 60vw"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-secondary" />
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="flex flex-col flex-1">
+            {category && (
+              <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-accent mb-3">
+                {category}
+              </span>
+            )}
+            <h2 className="text-headline text-2xl sm:text-3xl text-foreground mb-3 group-hover:text-accent transition-colors duration-300">
+              {post.title}
+            </h2>
+            {excerpt && (
+              <p className="text-body text-muted-foreground text-sm sm:text-base mb-4 line-clamp-3 flex-1">
+                {excerpt}
+              </p>
+            )}
+            <div className="flex items-center gap-5 text-xs text-muted-foreground mt-auto">
+              {post.author && <span>{post.author}</span>}
+              {post.author && <span className="w-1 h-1 rounded-full bg-border" />}
+              <time>{formatDate(post.date)}</time>
+              <span className="ml-auto inline-flex items-center gap-1.5 text-xs font-medium text-foreground group-hover:text-accent transition-colors">
+                Read
+                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </div>
+          </div>
+        </Link>
+      </article>
+
+      {/* Right — Following 3 Posts stacked */}
+      {followingPosts.length > 0 && (
+        <div className="flex flex-col gap-5 divide-y divide-border">
+          {followingPosts.map((p, i) => (
+            <article
+              key={p.id}
+              className="group animate-fade-up opacity-0 pt-5 first:pt-0"
+              style={{ animationDelay: `${0.15 + i * 0.08}s` }}
+            >
+              <Link href={`/blog/${p.slug}`} className="flex gap-4 items-start">
+                {/* Thumbnail 16:9 */}
+                <div className="relative w-28 shrink-0 aspect-video overflow-hidden rounded-md bg-muted image-zoom">
+                  {p.coverSrc ? (
+                    <Image
+                      src={p.coverSrc}
+                      alt={p.title}
+                      fill
+                      className="object-cover"
+                      sizes="112px"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-secondary" />
+                  )}
+                </div>
+
+                {/* Text */}
+                <div className="flex flex-col flex-1 min-w-0">
+                  {p.categories && (
+                    <span className="text-xs font-medium uppercase tracking-[0.12em] text-accent mb-1">
+                      {p.categories.split(',')[0]?.trim()}
+                    </span>
+                  )}
+                  <h3 className="text-headline text-sm text-foreground line-clamp-2 group-hover:text-accent transition-colors duration-300 mb-2">
+                    {p.title}
+                  </h3>
+                  <time className="text-xs text-muted-foreground mt-auto">{formatDate(p.date)}</time>
+                </div>
+              </Link>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ArticleCard({ post, index }: { post: MappedPost; index: number }) {
+  const category = post.categories?.split(',')[0]?.trim()
+  const excerpt = stripExcerpt(post.excerpt || '')
+
+  return (
+    <article 
+      className="group animate-fade-up opacity-0"
+      style={{ animationDelay: `${0.1 + index * 0.05}s` }}
     >
-      <Link href={`/blog/${post.slug}`} className="flex flex-col flex-1">
-        {/* 16:9 image — no overlay, no badge on top */}
-        <div className="relative w-full aspect-video overflow-hidden">
+      <Link href={`/blog/${post.slug}`} className="block">
+        {/* Image */}
+        <div className="relative aspect-[3/2] overflow-hidden rounded-lg bg-muted mb-5 image-zoom">
           {post.coverSrc ? (
             <Image
               src={post.coverSrc}
               alt={post.title}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 33vw"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-muted to-muted/50" />
+            <div className="absolute inset-0 bg-secondary" />
           )}
         </div>
 
-        {/* Text content */}
-        <div className="p-4 md:p-5 flex flex-col flex-1">
-          {/* Category badge inside text block, above title */}
-          {category && (
-            <div className="mb-2">
-              <CategoryBadge category={category} variant="default" />
-            </div>
-          )}
+        {/* Content */}
+        {category && (
+          <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-accent mb-3">
+            {category}
+          </span>
+        )}
+        <h3 className="text-headline text-lg text-foreground mb-2 line-clamp-2 group-hover:text-accent transition-colors duration-300">
+          {post.title}
+        </h3>
+        {excerpt && (
+          <p className="text-body text-sm text-muted-foreground line-clamp-2 mb-4">
+            {excerpt}
+          </p>
+        )}
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          {post.author && <span>{post.author}</span>}
+          {post.author && <span className="w-1 h-1 rounded-full bg-border" />}
+          <time>{formatDate(post.date)}</time>
+        </div>
+      </Link>
+    </article>
+  )
+}
 
-          <h3 className="font-serif text-base font-medium text-foreground leading-snug line-clamp-2 text-balance group-hover:text-primary transition-colors mb-2">
+function ArticleListItem({ post, index }: { post: MappedPost; index: number }) {
+  const category = post.categories?.split(',')[0]?.trim()
+
+  return (
+    <article 
+      className="group py-6 first:pt-0 last:pb-0 animate-slide-up opacity-0"
+      style={{ animationDelay: `${index * 0.03}s` }}
+    >
+      <Link href={`/blog/${post.slug}`} className="flex items-start justify-between gap-6 md:gap-12">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-4 mb-2">
+            {category && (
+              <span className="text-xs font-medium uppercase tracking-[0.1em] text-accent">
+                {category}
+              </span>
+            )}
+            <time className="text-xs text-muted-foreground tabular-nums">
+              {formatDate(post.date)}
+            </time>
+          </div>
+          <h3 className="text-headline text-base md:text-lg text-foreground group-hover:text-accent transition-colors duration-300 line-clamp-2">
             {post.title}
           </h3>
-
-          {!compact && plainExcerpt && (
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">
-              {plainExcerpt}
-            </p>
-          )}
-
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-auto pt-3 border-t border-border/40">
-            {post.author && (
-              <>
-                <span className="font-medium text-foreground">{post.author}</span>
-                <span>·</span>
-              </>
-            )}
-            <time>{formatDate(post.date)}</time>
-          </div>
         </div>
+        <ArrowRight className="w-5 h-5 text-muted-foreground shrink-0 mt-1 transition-all group-hover:text-accent group-hover:translate-x-1" />
       </Link>
     </article>
   )
@@ -207,65 +295,27 @@ function PostCard({
 
 function Header() {
   return (
-    <header className="sticky top-0 z-50 glass-card border-b border-border/30">
-      <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
-        <Link href="/blog" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg ai-gradient flex items-center justify-center group-hover:animate-pulse-glow transition-all">
-            <svg
-              className="w-4 h-4 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"
-              />
-            </svg>
-          </div>
-          <span className="font-serif text-xl font-semibold tracking-tight text-foreground">
-            AI Blog
-          </span>
+    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+      <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
+        <Link href="/blog" className="text-lg font-medium tracking-tight text-foreground hover:text-accent transition-colors">
+          Journal
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
-          {['Articles', 'Tutorials', 'News', 'Research'].map((item) => (
+          {['Articles', 'Topics', 'About'].map((item) => (
             <Link
               key={item}
               href="/blog"
-              className="text-sm text-muted-foreground transition-colors hover:text-primary relative group"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors link-underline"
             >
               {item}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
-          <button
-            className="p-2 text-muted-foreground transition-colors hover:text-primary"
-            aria-label="Search"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-              />
-            </svg>
-          </button>
-          <button className="btn-primary text-sm py-2 px-4 rounded-xl hidden sm:block">
-            Subscribe
-          </button>
-        </div>
+        <button className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+          Subscribe
+        </button>
       </div>
     </header>
   )
@@ -273,26 +323,13 @@ function Header() {
 
 function EmptyState() {
   return (
-    <div className="text-center py-20 animate-fade-up">
-      <div className="mx-auto w-20 h-20 rounded-2xl ai-gradient flex items-center justify-center mb-6 animate-float">
-        <svg
-          className="w-10 h-10 text-white"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={1.5}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-          />
-        </svg>
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6 animate-fade-up">
+      <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-6">
+        <Calendar className="w-8 h-8 text-muted-foreground" />
       </div>
-      <h3 className="font-serif text-2xl font-medium text-foreground mb-3">No articles yet</h3>
-      <p className="text-muted-foreground max-w-md mx-auto">
-        Check back soon for new content about AI and technology, or make sure your backend is
-        connected.
+      <h2 className="text-headline text-2xl text-foreground mb-3">No articles yet</h2>
+      <p className="text-body text-muted-foreground max-w-md">
+        Check back soon for new content, or ensure your backend connection is configured.
       </p>
     </div>
   )
@@ -300,40 +337,26 @@ function EmptyState() {
 
 function Footer() {
   return (
-    <footer className="border-t border-border/30 bg-muted/20">
-      <div className="mx-auto max-w-7xl px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+    <footer className="border-t border-border">
+      <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           <div className="md:col-span-2">
-            <Link href="/blog" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg ai-gradient flex items-center justify-center">
-                <svg
-                  className="w-4 h-4 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"
-                  />
-                </svg>
-              </div>
-              <span className="font-serif text-xl font-semibold text-foreground">AI Blog</span>
+            <Link href="/blog" className="text-lg font-medium tracking-tight text-foreground mb-4 block">
+              Journal
             </Link>
-
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Thoughtful writing about technology, design, and the future we are building together.
+            </p>
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-foreground mb-4">Categories</h4>
+            <h4 className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground mb-4">
+              Explore
+            </h4>
             <ul className="space-y-3">
-              {['Machine Learning', 'Deep Learning', 'NLP', 'Computer Vision'].map((item) => (
+              {['Latest', 'Popular', 'Topics', 'Authors'].map((item) => (
                 <li key={item}>
-                  <Link
-                    href="/blog"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
+                  <Link href="/blog" className="text-sm text-foreground/80 hover:text-foreground transition-colors">
                     {item}
                   </Link>
                 </li>
@@ -342,14 +365,13 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-foreground mb-4">Connect</h4>
+            <h4 className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground mb-4">
+              Connect
+            </h4>
             <ul className="space-y-3">
-              {['Twitter', 'GitHub', 'LinkedIn', 'Discord'].map((item) => (
+              {['Twitter', 'LinkedIn', 'GitHub', 'RSS'].map((item) => (
                 <li key={item}>
-                  <Link
-                    href="#"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
+                  <Link href="#" className="text-sm text-foreground/80 hover:text-foreground transition-colors">
                     {item}
                   </Link>
                 </li>
@@ -358,12 +380,9 @@ function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">Built with AI and attention to detail</p>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <span>Powered by</span>
-            <span className="ai-gradient-text font-semibold">Next.js</span>
-          </div>
+        <div className="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+          <p>Built with care and attention to detail.</p>
+          <p>Powered by Next.js</p>
         </div>
       </div>
     </footer>
