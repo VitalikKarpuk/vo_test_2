@@ -55,28 +55,12 @@ export default async function BlogPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative px-6 pt-8 pb-12 md:pt-12 md:pb-16 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 -z-10">
-          {/* Gradient base */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-link/5" />
-          
-          {/* Subtle grid pattern */}
-          <div 
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px),
-                               linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
-              backgroundSize: '60px 60px'
-            }}
-          />
-          
-          {/* Decorative blur circles */}
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-link/10 rounded-full blur-3xl" />
-        </div>
+      <section className="relative px-6 pt-8 pb-12 md:pt-12 md:pb-16 overflow-hidden bg-primary/[0.03]">
+        {/* Decorative blur circles */}
+        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-primary/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-48 -left-48 w-[400px] h-[400px] bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="mx-auto max-w-6xl">
+        <div className="relative mx-auto max-w-6xl">
           {/* Featured Article */}
           {featuredPost && (
             <FeaturedArticle post={featuredPost} followingPosts={featuredFollowing} />
@@ -89,7 +73,7 @@ export default async function BlogPage() {
         <section className="px-6 py-10 md:py-14 border-t border-border">
           <div className="mx-auto max-w-6xl">
             <SectionHeader title="Recent" />
-            <RecentArticles posts={recentPosts} />
+            <RecentArticles posts={recentPosts.map(p => ({ ...p, formattedDate: formatDate(p.date) }))} />
           </div>
         </section>
       )}

@@ -12,16 +12,7 @@ interface Post {
   categories?: string | null
   author?: string | null
   date: string
-}
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    timeZone: 'UTC',
-  })
+  formattedDate?: string
 }
 
 export function RecentArticles({ posts }: { posts: Post[] }) {
@@ -91,7 +82,6 @@ export function RecentArticles({ posts }: { posts: Post[] }) {
 
 function ArticleCard({ post, index }: { post: Post; index: number }) {
   const category = post.categories?.split(',')[0]?.trim()
-  const formattedDate = formatDate(post.date)
 
   return (
     <article
@@ -127,7 +117,7 @@ function ArticleCard({ post, index }: { post: Post; index: number }) {
           <div className="flex items-center gap-3 text-xs text-muted-foreground pt-1">
             {post.author && <span className="font-medium text-foreground/70">{post.author}</span>}
             {post.author && <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />}
-            <time suppressHydrationWarning>{formattedDate}</time>
+            <time>{post.formattedDate}</time>
           </div>
         </div>
       </Link>
