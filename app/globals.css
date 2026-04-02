@@ -105,11 +105,6 @@
 }
 
 /* AI Blog Animations */
-@keyframes slider-progress {
-  from { width: 0% }
-  to   { width: 100% }
-}
-
 @keyframes fade-up {
   from {
     opacity: 0;

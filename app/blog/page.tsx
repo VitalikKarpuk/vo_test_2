@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { getAllArticles, type MappedPost } from '@/lib/graphql/articles'
-import FeaturedSlider from '@/components/featured-slider'
+import FeaturedEditorial from '@/components/featured-editorial'
 import CategoryBadge from '@/components/category-badge'
 import CategoryFilter from '@/components/category-filter'
 
@@ -31,10 +31,10 @@ export default async function BlogPage() {
     )
   ).sort()
 
-  // Split posts: first 5 go to slider, rest to grids
-  const sliderPosts = posts.slice(0, 5)
-  const latestPosts = posts.slice(5, 11)
-  const remainingPosts = posts.slice(11)
+  // Split posts: first 4 — hero + 3 «Also featured»; rest — grids
+  const featuredPosts = posts.slice(0, 4)
+  const latestPosts = posts.slice(4, 10)
+  const remainingPosts = posts.slice(10)
 
   if (posts.length === 0) {
     return (
@@ -52,15 +52,12 @@ export default async function BlogPage() {
     <main className="min-h-screen bg-background">
       <Header />
 
-      {/* Featured Slider */}
-      {sliderPosts.length > 0 && (
+      {/* Featured — editorial hero + rail (16:9 imagery) */}
+      {featuredPosts.length > 0 && (
         <section className="px-4 pt-8 pb-10 animate-fade-up">
           <div className="mx-auto max-w-7xl">
-            <SectionHeading
-              color="primary"
-              label="Featured"
-            />
-            <FeaturedSlider posts={sliderPosts} />
+            <SectionHeading color="primary" label="Featured" />
+            <FeaturedEditorial posts={featuredPosts} />
           </div>
         </section>
       )}
