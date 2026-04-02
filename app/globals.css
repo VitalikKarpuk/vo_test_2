@@ -5,57 +5,72 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Minimal Elegant Blog - Cream & Charcoal */
-  --background: 40 20% 97%;
-  --foreground: 30 10% 12%;
+  /* Main background - Light gray-blue */
+  --main-bg: 216 25% 96%;
+  --background: 216 25% 96%;
+  --foreground: 0 0% 0%;
+  
+  /* Black / text base */
+  --black: 0 0% 0%;
+  
+  /* Primary - Brand pink #D6448F */
+  --primary: 329 64% 55%;
+  --primary-foreground: 0 0% 100%;
+  
+  /* Secondary - Dark gray */
+  --secondary: 240 5% 12%;
+  --secondary-foreground: 0 0% 100%;
   
   /* Cards & Surfaces */
   --card: 0 0% 100%;
-  --card-foreground: 30 10% 12%;
+  --card-foreground: 0 0% 0%;
   --popover: 0 0% 100%;
-  --popover-foreground: 30 10% 12%;
+  --popover-foreground: 0 0% 0%;
   
-  /* Primary - Warm charcoal */
-  --primary: 30 10% 15%;
-  --primary-foreground: 40 20% 97%;
+  /* Muted - Neutral gray */
+  --muted: 216 15% 92%;
+  --muted-foreground: 216 10% 40%;
   
-  /* Secondary - Soft stone */
-  --secondary: 35 8% 90%;
-  --secondary-foreground: 30 10% 20%;
+  /* Accent */
+  --accent: 216 15% 92%;
+  --accent-foreground: 0 0% 0%;
   
-  /* Muted - Warm gray */
-  --muted: 35 10% 93%;
-  --muted-foreground: 30 5% 45%;
+  /* Gray tones */
+  --gray: 0 0% 50%;
+  --gray2: 0 0% 75%;
   
-  /* Accent - Terracotta */
-  --accent: 18 70% 55%;
-  --accent-foreground: 0 0% 100%;
+  /* Warning - Orange-yellow */
+  --warning: 31 100% 56%;
+  --warning-foreground: 0 0% 0%;
+  
+  /* Link - Blue #597FFF */
+  --link: 226 100% 67%;
   
   /* Utilities */
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 35 10% 88%;
-  --input: 35 10% 90%;
-  --ring: 30 10% 25%;
+  --border: 216 15% 88%;
+  --input: 216 15% 90%;
+  --ring: 329 64% 55%;
   
   /* Charts */
-  --chart-1: 18 70% 55%;
-  --chart-2: 30 10% 25%;
-  --chart-3: 35 30% 65%;
-  --chart-4: 200 15% 50%;
-  --chart-5: 35 15% 75%;
+  --chart-1: 329 64% 55%;
+  --chart-2: 226 100% 67%;
+  --chart-3: 31 100% 56%;
+  --chart-4: 240 5% 12%;
+  --chart-5: 216 15% 70%;
   
   --radius: 0.5rem;
   
   /* Sidebar */
-  --sidebar: 40 20% 98%;
-  --sidebar-foreground: 30 10% 12%;
-  --sidebar-primary: 30 10% 15%;
-  --sidebar-primary-foreground: 40 20% 97%;
-  --sidebar-accent: 35 10% 93%;
-  --sidebar-accent-foreground: 30 10% 12%;
-  --sidebar-border: 35 10% 88%;
-  --sidebar-ring: 30 10% 25%;
+  --sidebar: 216 25% 98%;
+  --sidebar-foreground: 0 0% 0%;
+  --sidebar-primary: 329 64% 55%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 216 15% 92%;
+  --sidebar-accent-foreground: 0 0% 0%;
+  --sidebar-border: 216 15% 88%;
+  --sidebar-ring: 329 64% 55%;
 }
 
 @theme inline {
@@ -63,6 +78,13 @@
   --font-serif: 'Inter', ui-serif, Georgia, serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback', ui-monospace, monospace;
   
+  --color-main-bg: hsl(var(--main-bg));
+  --color-black: hsl(var(--black));
+  --color-gray: hsl(var(--gray));
+  --color-gray2: hsl(var(--gray2));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-link: hsl(var(--link));
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-card: hsl(var(--card));
