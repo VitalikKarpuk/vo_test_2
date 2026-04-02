@@ -11,10 +11,12 @@ export const metadata: Metadata = {
 }
 
 function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-US', {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
+    timeZone: 'UTC',
   })
 }
 
@@ -54,9 +56,8 @@ export default async function BlogPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="px-6 pt-16 pb-20 md:pt-24 md:pb-28">
+      <section className="px-6 pt-8 pb-12 md:pt-12 md:pb-16">
         <div className="mx-auto max-w-6xl">
-
           {/* Featured Article */}
           {featuredPost && (
             <FeaturedArticle post={featuredPost} followingPosts={featuredFollowing} />
@@ -66,7 +67,7 @@ export default async function BlogPage() {
 
       {/* Recent Articles */}
       {recentPosts.length > 0 && (
-        <section className="px-6 py-16 md:py-20 border-t border-border">
+        <section className="px-6 py-10 md:py-14 border-t border-border">
           <div className="mx-auto max-w-6xl">
             <SectionHeader title="Recent" />
             <RecentArticles posts={recentPosts} />
@@ -76,10 +77,10 @@ export default async function BlogPage() {
 
       {/* All Articles */}
       {allPosts.length > 0 && (
-        <section className="px-6 py-16 md:py-20 border-t border-border bg-muted/30">
+        <section className="px-6 py-10 md:py-14 border-t border-border bg-muted/30">
           <div className="mx-auto max-w-6xl">
             <SectionHeader title="Archive" />
-            <div className="space-y-0 divide-y divide-border">
+            <div className="divide-y divide-border">
               {allPosts.map((post, i) => (
                 <ArticleListItem key={post.id} post={post} index={i} />
               ))}
@@ -95,7 +96,7 @@ export default async function BlogPage() {
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <div className="flex items-center gap-4 mb-10 md:mb-12">
+    <div className="flex items-center gap-4 mb-6 md:mb-8">
       <h2 className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
         {title}
       </h2>
@@ -270,8 +271,8 @@ function EmptyState() {
 function Footer() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+      <div className="mx-auto max-w-6xl px-6 py-10 md:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="md:col-span-2">
             <Link href="/blog" className="text-lg font-medium tracking-tight text-foreground mb-4 block">
               Journal

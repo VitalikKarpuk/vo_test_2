@@ -15,10 +15,12 @@ interface Post {
 }
 
 function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-US', {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
+    timeZone: 'UTC',
   })
 }
 
@@ -41,7 +43,7 @@ export function RecentArticles({ posts }: { posts: Post[] }) {
   return (
     <div>
       {/* Category Filter Tabs */}
-      <div className="flex items-center gap-2 mb-10 overflow-x-auto scrollbar-none pb-2">
+      <div className="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-none pb-2">
         <button
           onClick={() => setActiveCategory(null)}
           className={`
@@ -78,7 +80,7 @@ export function RecentArticles({ posts }: { posts: Post[] }) {
       </div>
 
       {/* Articles Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {filteredPosts.map((post, i) => (
           <ArticleCard key={post.id} post={post} index={i} />
         ))}
@@ -97,7 +99,7 @@ function ArticleCard({ post, index }: { post: Post; index: number }) {
     >
       <Link href={`/blog/${post.slug}`} className="block">
         {/* Image 16:9 */}
-        <div className="relative aspect-video overflow-hidden rounded-xl bg-muted mb-4 image-zoom">
+        <div className="relative aspect-video overflow-hidden rounded-xl bg-muted mb-3 image-zoom">
           {post.coverSrc ? (
             <Image
               src={post.coverSrc}
