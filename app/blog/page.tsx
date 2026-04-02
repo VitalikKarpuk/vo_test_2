@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { getAllArticles, type MappedPost } from '@/lib/graphql/articles'
-import { ArrowRight, Calendar } from 'lucide-react'
+import { Calendar } from 'lucide-react'
 import { RecentArticles } from './recent-articles'
 
 export const metadata: Metadata = {
@@ -39,7 +39,6 @@ export default async function BlogPage() {
   const featuredPost = posts[0]
   const featuredFollowing = posts.slice(1, 3)
   const recentPosts = posts.slice(3, 6)
-  const allPosts = posts.slice(6)
 
   if (posts.length === 0) {
     return (
@@ -71,20 +70,6 @@ export default async function BlogPage() {
           <div className="mx-auto max-w-6xl">
             <SectionHeader title="Recent" />
             <RecentArticles posts={recentPosts} />
-          </div>
-        </section>
-      )}
-
-      {/* All Articles */}
-      {allPosts.length > 0 && (
-        <section className="px-6 py-10 md:py-14 border-t border-border bg-muted/30">
-          <div className="mx-auto max-w-6xl">
-            <SectionHeader title="Archive" />
-            <div className="divide-y divide-border">
-              {allPosts.map((post, i) => (
-                <ArticleListItem key={post.id} post={post} index={i} />
-              ))}
-            </div>
           </div>
         </section>
       )}
@@ -193,36 +178,6 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
         })}
       </div>
     </div>
-  )
-}
-
-function ArticleListItem({ post, index }: { post: MappedPost; index: number }) {
-  const category = post.categories?.split(',')[0]?.trim()
-
-  return (
-    <article
-      className="group py-6 first:pt-0 last:pb-0 animate-slide-up opacity-0"
-      style={{ animationDelay: `${index * 0.03}s` }}
-    >
-      <Link href={`/blog/${post.slug}`} className="flex items-start justify-between gap-6 md:gap-12">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-4 mb-2">
-            {category && (
-              <span className="text-xs font-medium uppercase tracking-[0.1em] text-accent">
-                {category}
-              </span>
-            )}
-            <time className="text-xs text-muted-foreground tabular-nums">
-              {formatDate(post.date)}
-            </time>
-          </div>
-          <h3 className="text-headline text-base md:text-lg text-foreground group-hover:text-accent transition-colors duration-300 line-clamp-2">
-            {post.title}
-          </h3>
-        </div>
-        <ArrowRight className="w-5 h-5 text-muted-foreground shrink-0 mt-1 transition-all group-hover:text-accent group-hover:translate-x-1" />
-      </Link>
-    </article>
   )
 }
 

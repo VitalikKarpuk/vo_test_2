@@ -126,7 +126,7 @@ function ArticleCard({ post, index }: { post: Post; index: number }) {
           <div className="flex items-center gap-3 text-xs text-muted-foreground pt-1">
             {post.author && <span className="font-medium text-foreground/70">{post.author}</span>}
             {post.author && <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />}
-            <time>{formatDate(post.date)}</time>
+            <time suppressHydrationWarning>{formatDate(post.date)}</time>
           </div>
         </div>
       </Link>
