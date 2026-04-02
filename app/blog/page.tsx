@@ -120,106 +120,90 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
   const excerpt = stripExcerpt(post.excerpt || '')
 
   return (
-    <div className="space-y-16">
-      {/* Main Featured Post */}
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 lg:gap-8 items-stretch">
+      {/* Left — Main Featured Post */}
       <article className="group animate-fade-up" style={{ animationDelay: '0.1s' }}>
-        <Link href={`/blog/${post.slug}`} className="block">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Image */}
-            <div className="relative aspect-[4/3] lg:aspect-square overflow-hidden rounded-lg bg-muted image-zoom">
-              {post.coverSrc ? (
-                <Image
-                  src={post.coverSrc}
-                  alt={post.title}
-                  fill
-                  priority
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-secondary" />
-              )}
-            </div>
+        <Link href={`/blog/${post.slug}`} className="flex flex-col h-full">
+          {/* Image 16:9 */}
+          <div className="relative w-full aspect-video overflow-hidden rounded-lg bg-muted image-zoom mb-5">
+            {post.coverSrc ? (
+              <Image
+                src={post.coverSrc}
+                alt={post.title}
+                fill
+                priority
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 60vw"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-secondary" />
+            )}
+          </div>
 
-            {/* Content */}
-            <div className="lg:py-8">
-              {category && (
-                <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-accent mb-4">
-                  {category}
-                </span>
-              )}
-              <h2 className="text-headline text-2xl sm:text-3xl lg:text-4xl text-foreground mb-4 group-hover:text-accent transition-colors duration-300">
-                {post.title}
-              </h2>
-              {excerpt && (
-                <p className="text-body text-muted-foreground text-base lg:text-lg mb-6 line-clamp-3">
-                  {excerpt}
-                </p>
-              )}
-              <div className="flex items-center gap-6 text-sm text-muted-foreground mb-6">
-                {post.author && (
-                  <span className="flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    {post.author}
-                  </span>
-                )}
-                <span className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  {formatDate(post.date)}
-                </span>
-              </div>
-              <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground group-hover:text-accent transition-colors">
-                Read Article
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          {/* Content */}
+          <div className="flex flex-col flex-1">
+            {category && (
+              <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-accent mb-3">
+                {category}
+              </span>
+            )}
+            <h2 className="text-headline text-2xl sm:text-3xl text-foreground mb-3 group-hover:text-accent transition-colors duration-300">
+              {post.title}
+            </h2>
+            {excerpt && (
+              <p className="text-body text-muted-foreground text-sm sm:text-base mb-4 line-clamp-3 flex-1">
+                {excerpt}
+              </p>
+            )}
+            <div className="flex items-center gap-5 text-xs text-muted-foreground mt-auto">
+              {post.author && <span>{post.author}</span>}
+              {post.author && <span className="w-1 h-1 rounded-full bg-border" />}
+              <time>{formatDate(post.date)}</time>
+              <span className="ml-auto inline-flex items-center gap-1.5 text-xs font-medium text-foreground group-hover:text-accent transition-colors">
+                Read
+                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
               </span>
             </div>
           </div>
         </Link>
       </article>
 
-      {/* Following 3 Articles */}
+      {/* Right — Following 3 Posts stacked */}
       {followingPosts.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+        <div className="flex flex-col gap-5 divide-y divide-border">
           {followingPosts.map((p, i) => (
-            <article 
+            <article
               key={p.id}
-              className="group animate-fade-up opacity-0"
+              className="group animate-fade-up opacity-0 pt-5 first:pt-0"
               style={{ animationDelay: `${0.15 + i * 0.08}s` }}
             >
-              <Link href={`/blog/${p.slug}`} className="block">
-                {/* Image */}
-                <div className="relative aspect-[3/2] overflow-hidden rounded-lg bg-muted mb-5 image-zoom">
+              <Link href={`/blog/${p.slug}`} className="flex gap-4 items-start">
+                {/* Thumbnail 16:9 */}
+                <div className="relative w-28 shrink-0 aspect-video overflow-hidden rounded-md bg-muted image-zoom">
                   {p.coverSrc ? (
                     <Image
                       src={p.coverSrc}
                       alt={p.title}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 33vw"
+                      sizes="112px"
                     />
                   ) : (
                     <div className="absolute inset-0 bg-secondary" />
                   )}
                 </div>
 
-                {/* Content */}
-                {p.categories && (
-                  <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-accent mb-3">
-                    {p.categories.split(',')[0]?.trim()}
-                  </span>
-                )}
-                <h3 className="text-headline text-lg text-foreground mb-2 line-clamp-2 group-hover:text-accent transition-colors duration-300">
-                  {p.title}
-                </h3>
-                {p.excerpt && (
-                  <p className="text-body text-sm text-muted-foreground line-clamp-2 mb-4">
-                    {stripExcerpt(p.excerpt)}
-                  </p>
-                )}
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  {p.author && <span>{p.author}</span>}
-                  {p.author && <span className="w-1 h-1 rounded-full bg-border" />}
-                  <time>{formatDate(p.date)}</time>
+                {/* Text */}
+                <div className="flex flex-col flex-1 min-w-0">
+                  {p.categories && (
+                    <span className="text-xs font-medium uppercase tracking-[0.12em] text-accent mb-1">
+                      {p.categories.split(',')[0]?.trim()}
+                    </span>
+                  )}
+                  <h3 className="text-headline text-sm text-foreground line-clamp-2 group-hover:text-accent transition-colors duration-300 mb-2">
+                    {p.title}
+                  </h3>
+                  <time className="text-xs text-muted-foreground mt-auto">{formatDate(p.date)}</time>
                 </div>
               </Link>
             </article>
