@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getArticleById, getAllArticles, type MappedPost } from '@/lib/graphql/articles'
 import MDXRenderer from '@/components/blog/mdxRenderer'
-import { ArrowLeft, Clock, Calendar, User, Link2, Share2 } from 'lucide-react'
+import { ArrowLeft, Clock, Calendar, Link2, Share2 } from 'lucide-react'
 
 interface PageProps {
   params: Promise<{ slug: string }>
