@@ -71,72 +71,77 @@ export default async function BlogPostPage({ params }: PageProps) {
         </div>
       </header>
 
-      {/* Main Content with Sidebar */}
+      {/* Article Header - Full Width */}
+      <div className="px-6 pt-10 md:pt-14">
+        <div className="mx-auto max-w-7xl">
+          {/* Meta */}
+          <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground animate-fade-up">
+            {category && (
+              <span className="inline-block px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-primary bg-primary/10 rounded-md">
+                {category}
+              </span>
+            )}
+            <span className="flex items-center gap-1.5 text-foreground/60">
+              <Clock className="w-4 h-4" />
+              {readingTime} min read
+            </span>
+          </div>
+
+          {/* Title */}
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-8 animate-fade-up max-w-4xl"
+            style={{ animationDelay: '0.05s' }}
+          >
+            {post.title}
+          </h1>
+
+          {/* Author & Date */}
+          <div
+            className="flex items-center gap-6 pb-8 mb-8 animate-fade-up"
+            style={{ animationDelay: '0.1s' }}
+          >
+            {post.author && (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                  <span className="text-sm font-medium">{post.author[0]}</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{post.author}</p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Calendar className="w-3 h-3" />
+                    <time dateTime={post.date}>{formatDate(post.date)}</time>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Cover Image - Full Width */}
+          {post.coverSrc && (
+            <div
+              className="relative aspect-video overflow-hidden rounded-xl bg-muted animate-fade-up"
+              style={{ animationDelay: '0.15s' }}
+            >
+              <Image
+                src={post.coverSrc}
+                alt={post.title}
+                fill
+                priority
+                loading="eager"
+                className="object-cover"
+                sizes="(max-width: 1280px) 100vw, 1280px"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Main Content with Sidebar - Below Image */}
       <div className="px-6 py-10 md:py-14">
         <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-10 lg:gap-14">
-            {/* Article */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10 lg:gap-12">
+            {/* Article Content */}
             <article>
-              {/* Meta */}
-              <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground animate-fade-up">
-                {category && (
-                  <span className="inline-block px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-primary bg-primary/10 rounded-md">
-                    {category}
-                  </span>
-                )}
-                <span className="flex items-center gap-1.5 text-foreground/60">
-                  <Clock className="w-4 h-4" />
-                  {readingTime} min read
-                </span>
-              </div>
-
-              {/* Title */}
-              <h1
-                className="text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-8 animate-fade-up"
-                style={{ animationDelay: '0.05s' }}
-              >
-                {post.title}
-              </h1>
-
-              {/* Author & Date */}
-              <div
-                className="flex items-center gap-6 pb-8 border-b border-border mb-10 animate-fade-up"
-                style={{ animationDelay: '0.1s' }}
-              >
-                {post.author && (
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                      <span className="text-sm font-medium">{post.author[0]}</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{post.author}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        <time dateTime={post.date}>{formatDate(post.date)}</time>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Cover Image */}
-              {post.coverSrc && (
-                <div
-                  className="relative aspect-video overflow-hidden rounded-xl bg-muted mb-10 animate-fade-up"
-                  style={{ animationDelay: '0.15s' }}
-                >
-                  <Image
-                    src={post.coverSrc}
-                    alt={post.title}
-                    fill
-                    priority
-                    loading="eager"
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 800px"
-                  />
-                </div>
-              )}
-
               {/* Content */}
               <div
                 className="article-body prose prose-neutral max-w-none animate-fade-up
