@@ -71,9 +71,13 @@ export default async function BlogPostPage({ params }: PageProps) {
         </div>
       </header>
 
-      {/* Article Header - Full Width */}
-      <div className="px-6 pt-10 md:pt-14">
-        <div className="mx-auto max-w-7xl">
+      {/* Article Header - Full Width with Background */}
+      <div className="relative px-6 pt-10 md:pt-14 overflow-hidden bg-primary/[0.03]">
+        {/* Decorative blur circles */}
+        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-primary/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 -left-48 w-[400px] h-[400px] bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative mx-auto max-w-7xl">
           {/* Meta */}
           <div className="flex items-center gap-4 mb-6 text-sm text-muted-foreground animate-fade-up">
             {category && (
@@ -119,7 +123,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           {/* Cover Image - Full Width */}
           {post.coverSrc && (
             <div
-              className="relative aspect-video overflow-hidden rounded-xl bg-muted animate-fade-up"
+              className="relative aspect-video overflow-hidden rounded-xl bg-muted animate-fade-up mb-10 md:mb-14"
               style={{ animationDelay: '0.15s' }}
             >
               <Image
