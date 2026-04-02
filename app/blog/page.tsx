@@ -34,9 +34,9 @@ export default async function BlogPage() {
   const posts = await getAllArticles()
 
   const featuredPost = posts[0]
-  const featuredFollowing = posts.slice(1, 4)
-  const recentPosts = posts.slice(4, 7)
-  const allPosts = posts.slice(7)
+  const featuredFollowing = posts.slice(1, 3)
+  const recentPosts = posts.slice(3, 6)
+  const allPosts = posts.slice(6)
 
   if (posts.length === 0) {
     return (
@@ -109,7 +109,7 @@ function SectionHeader({ title }: { title: string }) {
 
 function FeaturedArticle({ post, followingPosts }: { post: MappedPost; followingPosts: MappedPost[] }) {
   const category = post.categories?.split(',')[0]?.trim()
-  const secondaryPosts = followingPosts.slice(0, 3)
+  const secondaryPosts = followingPosts.slice(0, 2)
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
@@ -132,9 +132,9 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
             <div className="absolute inset-0 bg-secondary" />
           )}
           
-          {/* Content block with local background - bottom only */}
+          {/* Content block with transparent background - bottom only */}
           <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
-            <div className="bg-black/70 backdrop-blur-sm rounded-lg p-4 md:p-5">
+            <div className="bg-black/40 backdrop-blur-md rounded-lg p-4 md:p-5">
               {category && (
                 <span className="inline-block px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-white bg-primary rounded-md mb-3">
                   {category}
@@ -143,9 +143,9 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
               <h2 className="text-xl sm:text-2xl font-semibold text-white leading-tight mb-2 line-clamp-2 group-hover:text-white/90 transition-colors">
                 {post.title}
               </h2>
-              <div className="flex items-center gap-3 text-xs text-white/70">
+              <div className="flex items-center gap-3 text-xs text-white/80">
                 {post.author && <span>{post.author}</span>}
-                {post.author && <span className="w-1 h-1 rounded-full bg-white/50" />}
+                {post.author && <span className="w-1 h-1 rounded-full bg-white/60" />}
                 <time>{formatDate(post.date)}</time>
               </div>
             </div>
@@ -153,7 +153,7 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
         </Link>
       </article>
 
-      {/* Secondary posts - right column stacked */}
+      {/* Secondary posts - right column stacked (2 posts) */}
       <div className="flex flex-col gap-4">
         {secondaryPosts.map((p, i) => {
           const cat = p.categories?.split(',')[0]?.trim()
@@ -163,7 +163,7 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
               className="group relative flex-1 animate-fade-up opacity-0"
               style={{ animationDelay: `${0.15 + i * 0.08}s` }}
             >
-              <Link href={`/blog/${p.slug}`} className="block relative aspect-video h-full overflow-hidden rounded-xl bg-muted">
+              <Link href={`/blog/${p.slug}`} className="block relative h-full overflow-hidden rounded-xl bg-muted">
                 {p.coverSrc ? (
                   <Image
                     src={p.coverSrc}
@@ -176,9 +176,9 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
                   <div className="absolute inset-0 bg-secondary" />
                 )}
                 
-                {/* Content block with local background - bottom only */}
+                {/* Content block with transparent background - bottom only */}
                 <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <div className="bg-black/70 backdrop-blur-sm rounded-lg p-3">
+                  <div className="bg-black/40 backdrop-blur-md rounded-lg p-3">
                     {cat && (
                       <span className="inline-block px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white bg-primary rounded mb-1.5">
                         {cat}
