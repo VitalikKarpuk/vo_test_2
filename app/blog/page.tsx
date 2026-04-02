@@ -99,49 +99,69 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
   const secondaryPosts = followingPosts.slice(0, 2)
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
+    <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-[2fr_1fr] lg:gap-4">
       {/* Main Featured - left side */}
       <article 
-        className="group relative animate-fade-up"
+        className="group animate-fade-up"
         style={{ animationDelay: '0.1s' }}
       >
-        <Link href={`/blog/${post.slug}`} className="block relative aspect-video overflow-hidden rounded-xl bg-muted">
-          {post.coverSrc ? (
-            <Image
-              src={post.coverSrc}
-              alt={post.title}
-              fill
-              priority
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 1024px) 100vw, 66vw"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-secondary" />
-          )}
-          
-          {/* Content block with transparent background - bottom only */}
-          <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
-            <div className="bg-black/40 backdrop-blur-md rounded-lg p-4 md:p-5">
-              {category && (
-                <span className="inline-block px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-white bg-primary rounded-md mb-3">
-                  {category}
-                </span>
-              )}
-              <h2 className="text-xl sm:text-2xl font-semibold text-white leading-tight mb-2 line-clamp-2 group-hover:text-white/90 transition-colors">
-                {post.title}
-              </h2>
-              <div className="flex items-center gap-3 text-xs text-white/80">
-                {post.author && <span>{post.author}</span>}
-                {post.author && <span className="w-1 h-1 rounded-full bg-white/60" />}
-                <time>{formatDate(post.date)}</time>
+        <Link href={`/blog/${post.slug}`} className="block">
+          {/* Image */}
+          <div className="relative aspect-video overflow-hidden rounded-xl bg-muted">
+            {post.coverSrc ? (
+              <Image
+                src={post.coverSrc}
+                alt={post.title}
+                fill
+                priority
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(max-width: 1024px) 100vw, 66vw"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-secondary" />
+            )}
+            
+            {/* Content overlay - only on desktop */}
+            <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-6">
+              <div className="bg-black/40 backdrop-blur-md rounded-lg p-5">
+                {category && (
+                  <span className="inline-block px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-white bg-primary rounded-md mb-3">
+                    {category}
+                  </span>
+                )}
+                <h2 className="text-2xl font-semibold text-white leading-tight mb-2 line-clamp-2 group-hover:text-white/90 transition-colors">
+                  {post.title}
+                </h2>
+                <div className="flex items-center gap-3 text-xs text-white/80">
+                  {post.author && <span>{post.author}</span>}
+                  {post.author && <span className="w-1 h-1 rounded-full bg-white/60" />}
+                  <time>{formatDate(post.date)}</time>
+                </div>
               </div>
+            </div>
+          </div>
+          
+          {/* Content below image - only on mobile */}
+          <div className="lg:hidden mt-4">
+            {category && (
+              <span className="inline-block px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-primary bg-primary/10 rounded-md mb-2">
+                {category}
+              </span>
+            )}
+            <h2 className="text-xl font-semibold text-foreground leading-tight mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+              {post.title}
+            </h2>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              {post.author && <span>{post.author}</span>}
+              {post.author && <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />}
+              <time>{formatDate(post.date)}</time>
             </div>
           </div>
         </Link>
       </article>
 
-      {/* Secondary posts - right column stacked (2 posts) */}
-      <div className="flex flex-col gap-4">
+      {/* Secondary posts - desktop: right column stacked, mobile: horizontal cards */}
+      <div className="hidden lg:flex flex-col gap-4">
         {secondaryPosts.map((p, i) => {
           const cat = p.categories?.split(',')[0]?.trim()
           return (
@@ -157,13 +177,13 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
                     alt={p.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 1024px) 100vw, 33vw"
+                    sizes="33vw"
                   />
                 ) : (
                   <div className="absolute inset-0 bg-secondary" />
                 )}
                 
-                {/* Content block with transparent background - bottom only */}
+                {/* Content block with transparent background */}
                 <div className="absolute bottom-0 left-0 right-0 p-3">
                   <div className="bg-black/40 backdrop-blur-md rounded-lg p-3">
                     {cat && (
@@ -175,6 +195,50 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
                       {p.title}
                     </h3>
                   </div>
+                </div>
+              </Link>
+            </article>
+          )
+        })}
+      </div>
+
+      {/* Secondary posts - mobile only: compact horizontal cards */}
+      <div className="lg:hidden flex flex-col gap-4">
+        {secondaryPosts.map((p, i) => {
+          const cat = p.categories?.split(',')[0]?.trim()
+          return (
+            <article
+              key={p.id}
+              className="group animate-fade-up opacity-0"
+              style={{ animationDelay: `${0.15 + i * 0.08}s` }}
+            >
+              <Link href={`/blog/${p.slug}`} className="flex gap-4">
+                {/* Thumbnail */}
+                <div className="relative w-28 aspect-video shrink-0 overflow-hidden rounded-lg bg-muted">
+                  {p.coverSrc ? (
+                    <Image
+                      src={p.coverSrc}
+                      alt={p.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="112px"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-secondary" />
+                  )}
+                </div>
+                
+                {/* Content */}
+                <div className="flex flex-col min-w-0 py-0.5">
+                  {cat && (
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-primary mb-1">
+                      {cat}
+                    </span>
+                  )}
+                  <h3 className="text-sm font-medium text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                    {p.title}
+                  </h3>
+                  <time className="text-xs text-muted-foreground mt-auto">{formatDate(p.date)}</time>
                 </div>
               </Link>
             </article>
