@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { getAllArticles, type MappedPost } from '@/lib/graphql/articles'
-import { ArrowRight, Calendar, User } from 'lucide-react'
+import { ArrowRight, Calendar } from 'lucide-react'
+import { RecentArticles } from './recent-articles'
 
 export const metadata: Metadata = {
   title: 'Blog | Insights & Stories',
@@ -68,11 +69,7 @@ export default async function BlogPage() {
         <section className="px-6 py-16 md:py-20 border-t border-border">
           <div className="mx-auto max-w-6xl">
             <SectionHeader title="Recent" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 stagger">
-              {recentPosts.map((post, i) => (
-                <ArticleCard key={post.id} post={post} index={i} />
-              ))}
-            </div>
+            <RecentArticles posts={recentPosts} />
           </div>
         </section>
       )}
@@ -195,55 +192,6 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
         })}
       </div>
     </div>
-  )
-}
-
-function ArticleCard({ post, index }: { post: MappedPost; index: number }) {
-  const category = post.categories?.split(',')[0]?.trim()
-  const excerpt = stripExcerpt(post.excerpt || '')
-
-  return (
-    <article
-      className="group animate-fade-up opacity-0"
-      style={{ animationDelay: `${0.1 + index * 0.05}s` }}
-    >
-      <Link href={`/blog/${post.slug}`} className="block">
-        {/* Image */}
-        <div className="relative aspect-[3/2] overflow-hidden rounded-lg bg-muted mb-5 image-zoom">
-          {post.coverSrc ? (
-            <Image
-              src={post.coverSrc}
-              alt={post.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 33vw"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-secondary" />
-          )}
-        </div>
-
-        {/* Content */}
-        {category && (
-          <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-accent mb-3">
-            {category}
-          </span>
-        )}
-        <h3 className="text-headline text-lg text-foreground mb-2 line-clamp-2 group-hover:text-accent transition-colors duration-300">
-          {post.title}
-        </h3>
-        {excerpt && (
-          <p className="text-body text-sm text-muted-foreground line-clamp-2 mb-4">
-            {excerpt}
-          </p>
-        )}
-        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-          {post.author && <span>{post.author}</span>}
-          {post.author && <span className="w-1 h-1 rounded-full bg-border" />}
-          <time>{formatDate(post.date)}</time>
-        </div>
-      </Link>
-    </article>
   )
 }
 
