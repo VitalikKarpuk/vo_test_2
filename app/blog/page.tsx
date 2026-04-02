@@ -38,7 +38,8 @@ export default async function BlogPage() {
 
   const featuredPost = posts[0]
   const featuredFollowing = posts.slice(1, 3)
-  const recentPosts = posts.slice(3, 6)
+  // On mobile, featured following posts will be hidden, so include them in recent
+  const recentPosts = posts.slice(1, 7)
 
   if (posts.length === 0) {
     return (
@@ -55,7 +56,7 @@ export default async function BlogPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative px-6 pt-8 pb-12 md:pt-12 md:pb-16 overflow-hidden bg-primary/[0.03]">
+      <section className="relative px-4 sm:px-6 pt-6 pb-8 md:pt-10 md:pb-14 overflow-hidden bg-primary/[0.03]">
         {/* Decorative blur circles */}
         <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-primary/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-48 -left-48 w-[400px] h-[400px] bg-primary/10 rounded-full blur-3xl pointer-events-none" />
@@ -70,7 +71,7 @@ export default async function BlogPage() {
 
       {/* Recent Articles */}
       {recentPosts.length > 0 && (
-        <section className="px-6 py-10 md:py-14 border-t border-border">
+        <section className="px-4 sm:px-6 py-8 md:py-12 border-t border-border">
           <div className="mx-auto max-w-6xl">
             <SectionHeader title="Recent" />
             <RecentArticles posts={recentPosts.map(p => ({ ...p, formattedDate: formatDate(p.date) }))} />
@@ -99,7 +100,7 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
   const secondaryPosts = followingPosts.slice(0, 2)
 
   return (
-    <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-[2fr_1fr] lg:gap-4">
+    <div className="lg:grid lg:grid-cols-[2fr_1fr] lg:gap-4">
       {/* Main Featured - left side */}
       <article 
         className="group animate-fade-up"
@@ -107,7 +108,7 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
       >
         <Link href={`/blog/${post.slug}`} className="block">
           {/* Image */}
-          <div className="relative aspect-video overflow-hidden rounded-xl bg-muted">
+          <div className="relative aspect-video overflow-hidden rounded-2xl bg-muted">
             {post.coverSrc ? (
               <Image
                 src={post.coverSrc}
@@ -123,7 +124,7 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
             
             {/* Content overlay - only on desktop */}
             <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-6">
-              <div className="bg-black/40 backdrop-blur-md rounded-lg p-5">
+              <div className="bg-black/40 backdrop-blur-md rounded-xl p-5">
                 {category && (
                   <span className="inline-block px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-white bg-primary rounded-md mb-3">
                     {category}
@@ -142,16 +143,16 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
           </div>
           
           {/* Content below image - only on mobile */}
-          <div className="lg:hidden mt-4">
+          <div className="lg:hidden mt-3">
             {category && (
               <span className="inline-block px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-primary bg-primary/10 rounded-md mb-2">
                 {category}
               </span>
             )}
-            <h2 className="text-xl font-semibold text-foreground leading-tight mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+            <h2 className="text-lg font-semibold text-foreground leading-snug mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
               {post.title}
             </h2>
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
               {post.author && <span>{post.author}</span>}
               {post.author && <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />}
               <time>{formatDate(post.date)}</time>
@@ -160,7 +161,7 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
         </Link>
       </article>
 
-      {/* Secondary posts - desktop: right column stacked, mobile: horizontal cards */}
+      {/* Secondary posts - desktop only */}
       <div className="hidden lg:flex flex-col gap-4">
         {secondaryPosts.map((p, i) => {
           const cat = p.categories?.split(',')[0]?.trim()
@@ -170,7 +171,7 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
               className="group relative flex-1 animate-fade-up opacity-0"
               style={{ animationDelay: `${0.15 + i * 0.08}s` }}
             >
-              <Link href={`/blog/${p.slug}`} className="block relative h-full overflow-hidden rounded-xl bg-muted">
+              <Link href={`/blog/${p.slug}`} className="block relative h-full overflow-hidden rounded-2xl bg-muted">
                 {p.coverSrc ? (
                   <Image
                     src={p.coverSrc}
@@ -185,7 +186,7 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
                 
                 {/* Content block with transparent background */}
                 <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <div className="bg-black/40 backdrop-blur-md rounded-lg p-3">
+                  <div className="bg-black/40 backdrop-blur-md rounded-xl p-3">
                     {cat && (
                       <span className="inline-block px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white bg-primary rounded mb-1.5">
                         {cat}
@@ -195,50 +196,6 @@ function FeaturedArticle({ post, followingPosts }: { post: MappedPost; following
                       {p.title}
                     </h3>
                   </div>
-                </div>
-              </Link>
-            </article>
-          )
-        })}
-      </div>
-
-      {/* Secondary posts - mobile only: compact horizontal cards */}
-      <div className="lg:hidden flex flex-col gap-4">
-        {secondaryPosts.map((p, i) => {
-          const cat = p.categories?.split(',')[0]?.trim()
-          return (
-            <article
-              key={p.id}
-              className="group animate-fade-up opacity-0"
-              style={{ animationDelay: `${0.15 + i * 0.08}s` }}
-            >
-              <Link href={`/blog/${p.slug}`} className="flex gap-4">
-                {/* Thumbnail */}
-                <div className="relative w-28 aspect-video shrink-0 overflow-hidden rounded-lg bg-muted">
-                  {p.coverSrc ? (
-                    <Image
-                      src={p.coverSrc}
-                      alt={p.title}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="112px"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-secondary" />
-                  )}
-                </div>
-                
-                {/* Content */}
-                <div className="flex flex-col min-w-0 py-0.5">
-                  {cat && (
-                    <span className="text-[10px] font-medium uppercase tracking-wider text-primary mb-1">
-                      {cat}
-                    </span>
-                  )}
-                  <h3 className="text-sm font-medium text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-                    {p.title}
-                  </h3>
-                  <time className="text-xs text-muted-foreground mt-auto">{formatDate(p.date)}</time>
                 </div>
               </Link>
             </article>
